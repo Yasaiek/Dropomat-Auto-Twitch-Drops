@@ -359,7 +359,7 @@ function render(s) {
   $('foot').textContent = t(s.settings.autoClaim ? 'footOn' : 'footOff');
   const dg = s.diag;
   const total = (s.campaigns || []).reduce((n, c) => n + c.camps.length, 0);
-  $('diag').textContent = s.dropsAt ? t('diag', { time: hm(s.dropsAt), n: total + (dg ? ` (page ${dg.page} · scan ${dg.scan} · api ${dg.api} · inv ${dg.inv} · streams ${dg.streams})` : ''), p: t(s.progKnown ? 'progYes' : 'progNo') }) : '';
+  $('diag').textContent = s.dropsAt ? t('diag', { time: hm(s.dropsAt), n: total + (dg ? ` (page ${dg.page} · scan ${dg.scan} · api ${dg.api} · inv ${dg.inv} · streams ${dg.streams} · det ${dg.det || 0} · noimg ${dg.noimg || 0})` : ''), p: t(s.progKnown ? 'progYes' : 'progNo') }) : '';
   const lg = $('log');
   const lsig = s.log.length + ':' + (s.log.length ? s.log[s.log.length - 1].t : 0) + ':' + lang;
   if (lg.dataset.sig !== lsig) {

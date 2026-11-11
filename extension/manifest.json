@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "Dropomat",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "__MSG_extDesc__",
   "default_locale": "en",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4wFQ0SBVRpLbxv0qr3ETb56X2ABDt9zRbEfuBCSbAdfPzJdVK0hHEW4enkuzTeZ3W6tGajCFqGsyqKVs6fUqHOFOKbcS+CAor1cWsCed/iJbQECkJDoFHR3+bmW2Cw0fmjYfq+lYTR4thcYe3LtNHoeAfvguGdARB6kVei2QgVA/WY/UyH4knkIMcMj8C0k4N19ZCLgBHZ73bcnB6Dsj+zXfMfJieAeXtILZBVVYvbjwd3hvWtMdQ8gQjoKBr/vbw+rnmesONBr+aIdsdO5yumwKV6HxmSe0IDgo0LUxLu/MtLv/XFLQCERl4p+7RJtDZQk08skQAfA9U3JZww7ZqQIDAQAB",

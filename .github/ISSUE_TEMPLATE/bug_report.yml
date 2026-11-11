@@ -31,4 +31,4 @@ body:
     id: version
     attributes:
       label: Dropomat version
-      placeholder: e.g. 1.2.1
+      placeholder: e.g. 1.2.2

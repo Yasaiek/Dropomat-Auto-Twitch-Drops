@@ -158,6 +158,10 @@ write(os.path.join(ROOT, '.gitattributes'), '* -text\n')
 write(os.path.join(ROOT, 'CHANGELOG.md'), f'''# Changelog
 
 ## {version}
+- Drop names and icons are remembered, so they stay visible when a campaign's streams go offline or Twitch's campaign page fails to load.
+- A failed read of the campaign page no longer drops campaigns from the list.
+
+## 1.2.1
 - Drop icons and names no longer go missing for campaigns you have no progress in yet (data from several Twitch sources is now combined).
 - A drop without a name no longer shows a stray colon in the queue.
 

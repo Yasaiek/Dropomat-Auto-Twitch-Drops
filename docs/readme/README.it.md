@@ -5,7 +5,7 @@
 <p align="center">
   <a href="../dropomat.zip?raw=true"><b>⬇ Scarica (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Segnala un bug</a> &nbsp;·&nbsp; Versione 1.2.1
+  <a href="../../../../issues/new/choose">Segnala un bug</a> &nbsp;·&nbsp; Versione 1.2.2
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 

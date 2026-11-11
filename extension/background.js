@@ -171,18 +171,21 @@ const qSession = (channelId) => `{ currentUser{ dropCurrentSession(channelID:${J
   '{ dropID currentMinutesWatched requiredMinutesWatched game{ id displayName } channel{ id name } } } }';
 
 // Lista dropów kampanii + to, co wiemy o postępie (świeże `self`, a gdy go brak – poprzedni odczyt).
-function mapDrops(list, selfMap, oldDrops) {
+function mapDrops(list, selfMap, oldDrops, meta) {
   const oldById = {};
   for (const d of oldDrops || []) oldById[d.id] = d;
   return (list || []).filter((d) => d && d.requiredMinutesWatched > 0).map((d) => {
     const self = (selfMap && selfMap[d.id]) || d.self;
     const old = oldById[d.id];
+    const known = old || (meta && meta[d.id]) || null; // opis zapamiętany wcześniej
+    const rawBen = (d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.id).filter(Boolean);
+    const rawPre = (d.preconditionDrops || []).map((p) => p && p.id).filter(Boolean);
     const out = {
-      id: d.id, name: d.name || ((d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.name).filter(Boolean)[0]) || (old && old.name) || '', req: d.requiredMinutesWatched,
+      id: d.id, name: d.name || ((d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.name).filter(Boolean)[0]) || (known && known.name) || '', req: d.requiredMinutesWatched,
       hasSelf: false, cur: 0, claimed: false, preMet: undefined,
-      pre: (d.preconditionDrops || []).map((p) => p && p.id).filter(Boolean),
-      benefits: (d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.id).filter(Boolean),
-      img: ((d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.imageAssetURL).filter(Boolean)[0]) || (old && old.img) || ''
+      pre: rawPre.length ? rawPre : (known && known.pre) || [],
+      benefits: rawBen.length ? rawBen : (known && known.benefits) || [],
+      img: ((d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.imageAssetURL).filter(Boolean)[0]) || (known && known.img) || ''
     };
     if (self) {
       out.hasSelf = true; out.cur = self.currentMinutesWatched || 0;
@@ -230,7 +233,7 @@ function baseCamp(c, old) {
     connected: old ? old.connected : undefined, // true/false, a gdy nie wiemy – undefined
     drops: old ? old.drops : null,
     channels: old ? old.channels : null,
-    detail: !!(old && old.detail), detailTries: (old && old.detailTries) || 0, fillTries: (old && old.fillTries) || 0,
+    detail: !!(old && old.detail), detailTries: (old && old.detailTries) || 0, fillAt: (old && old.fillAt) || 0,
     chanIds: old ? old.chanIds || null : null,
     inInv: false, src: ''
   };
@@ -328,7 +331,16 @@ async function capturePage(st, now) {
     camps[c.id] = next;
   }
   pageBuf = null;
-  st.page = { at: now, camps, n: Object.keys(camps).length };
+  const fresh = Object.keys(camps).length;
+  for (const c of Object.values(camps)) c.seenAt = now;
+  for (const [id, pc] of Object.entries((st.page && st.page.camps) || {})) {
+    const seen = pc.seenAt || st.page.at || 0;
+    if (camps[id]) { const drops = mergeRaw(camps[id].timeBasedDrops, pc.timeBasedDrops); if (Array.isArray(drops)) camps[id].timeBasedDrops = drops; continue; }
+    if (now - seen > 6 * 3600000) continue;                       // nie widziana od 6 godzin – naprawdę zniknęła
+    if (Date.parse(pc.endAt) && Date.parse(pc.endAt) <= now) continue;
+    camps[id] = Object.assign({}, pc, { seenAt: seen });
+  }
+  st.page = { at: now, camps, n: fresh };
 }
 
 // Pobiera kampanie i postęp. Zwraca true, gdy dane z konta są wiarygodne.
@@ -339,7 +351,8 @@ async function refreshDrops(st) {
   const old = st.camps || {};
   const camps = {};
   const selfMap = {};
-  const diag = { page: 0, scan: 0, api: 0, inv: 0, streams: 0 };
+  const diag = { page: 0, scan: 0, api: 0, inv: 0, streams: 0, det: 0, noimg: 0 };
+  const mineNow = [...(st.games || []), ...(st.tracked || [])];
   const merge = (c, src) => {
     if (!c || !c.id) return null;
     let b = camps[c.id];
@@ -363,8 +376,9 @@ async function refreshDrops(st) {
   };
   const finish = () => {
     const claimed = st.claimed || {};
+    const meta = st.meta = st.meta || {};
     for (const c of Object.values(camps)) {
-      if (c.rawDrops) c.drops = mapDrops(c.rawDrops, selfMap, old[c.id] && old[c.id].drops);
+      if (c.rawDrops) c.drops = mapDrops(c.rawDrops, selfMap, old[c.id] && old[c.id].drops, meta);
       else if (c.drops) c.drops = c.drops.map((d) => (selfMap[d.id] ? Object.assign({}, d, {
         hasSelf: true, cur: selfMap[d.id].currentMinutesWatched || 0, claimed: !!selfMap[d.id].isClaimed, preMet: selfMap[d.id].hasPreconditionsMet
       }) : d));
@@ -380,6 +394,22 @@ async function refreshDrops(st) {
         if (!d.hasSelf || d.cur >= d.req || awarded((d.selfAt || 0) - 60000)) d.claimed = true;
       }
     }
+    for (const c of Object.values(camps)) for (const d of c.drops || []) {
+      if (!d.img && !d.name) continue;
+      const m = meta[d.id] || (meta[d.id] = {});
+      if (d.img) m.img = d.img;
+      if (d.name) m.name = d.name;
+      if (d.benefits.length) m.benefits = d.benefits;
+      if (d.pre.length) m.pre = d.pre;
+      m.at = now;
+    }
+    const ids = Object.keys(meta);
+    if (ids.length > 3000) { // porządek: najdawniej widziane wypadają
+      ids.sort((x, y) => (meta[x].at || 0) - (meta[y].at || 0));
+      for (const id of ids.slice(0, ids.length - 2500)) delete meta[id];
+    }
+    diag.noimg = Object.values(camps).filter((c) => isActive(c, now) && mineNow.some((g) => matches(c, g)))
+      .reduce((n, c) => n + (c.drops || []).filter((d) => !d.img).length, 0);
     st.camps = camps;
     st.diag = diag;
   };
@@ -466,14 +496,18 @@ async function refreshDrops(st) {
 
   // 5) szczegóły (dozwolone kanały, lista dropów) – tylko dla gier z kolejki/śledzonych, raz na kampanię
   const relevant = Object.values(camps).filter((c) => isActive(c, now) && mine.some((g) => matches(c, g)));
-  const lacking = (c) => (c.rawDrops ? poorDrops(c.rawDrops) : !c.drops || c.drops.some((d) => !d.img));
-  const need = relevant.filter((c) => (!c.detail && c.detailTries < 3) || (c.detail && lacking(c) && c.fillTries < 4)).slice(0, 24);
-  for (const part of chunk(need, 8)) {
-    const res = await tryGql(qDetail(part.map((c) => c.id)), token);
-    const d = (res.data && res.data.currentUser) || {};
-    part.forEach((c, k) => {
-      const x = d['c' + k];
-      if (c.detail) c.fillTries++; else c.detailTries++;
+  // brak obrazka nagrody = brak pełnego opisu dropa (chyba że pamiętamy go z wcześniejszych odczytów)
+  const known = (d) => hasBen(d) || !!(st.meta && st.meta[d.id] && st.meta[d.id].img);
+  const lacking = (c) => (c.rawDrops ? c.rawDrops.some((d) => d && d.requiredMinutesWatched > 0 && !known(d)) : !c.drops || c.drops.some((d) => !d.img));
+  const fill = relevant.filter((c) => c.detail && lacking(c) && now - (c.fillAt || 0) >= 20 * 60000).slice(0, 16); // ponawiamy co 20 min
+  for (const c of fill) c.fillAt = now;
+  const need = [...relevant.filter((c) => !c.detail && c.detailTries < 3), ...fill].slice(0, 30);
+  if (need.length) {
+    const res = await gqlBatch(need.map((c) => qDetail([c.id])), token);
+    need.forEach((c, k) => {
+      const x = res[k] && res[k].currentUser && res[k].currentUser.c0;
+      if (x) diag.det++;
+      if (!c.detail) c.detailTries++;
       if (!x) return;
       if (!c.detail) { // kanały ustawiamy tylko, gdy ich jeszcze nie znaliśmy
         const allow = x.allow || {};
@@ -485,9 +519,8 @@ async function refreshDrops(st) {
     });
   }
   // 5b) nadal brakuje obrazków nagród: kampanię widać też (bez logowania) pod kanałami, którym ją przypisano – także gdy nie nadają
-  const still = relevant.filter((c) => lacking(c) && (c.chanIds || []).length && c.fillTries < 6).slice(0, 8);
+  const still = fill.filter((c) => lacking(c) && (c.chanIds || []).length).slice(0, 8);
   if (still.length) {
-    for (const c of still) c.fillTries++;
     try {
       const res = await gqlBatch(still.map((c) => qChanCamps(c.chanIds.slice(0, 3))));
       res.forEach((d) => {
