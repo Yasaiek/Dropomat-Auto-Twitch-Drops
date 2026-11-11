@@ -59,8 +59,12 @@ def hero():
         pd.text((x + 20, y + 10), label, font=f, fill=(205, 238, 255, 255))
         x += w + 12
     im.alpha_composite(pills)
-    def place(name, width, angle, pos):
-        s = Image.open(os.path.join(OUT, 'en', name)).convert('RGBA')
+    REAL = os.path.join(os.path.dirname(__file__), 'real')   # real screenshots sent by the author (cropped)
+    def place(src, width, angle, pos, pad_in=0):
+        s = Image.open(src).convert('RGBA')
+        if pad_in:  # crop of a panel: put it on the popup's own background so it reads as a window
+            bgc = Image.new('RGBA', (s.size[0] + pad_in * 2, s.size[1] + pad_in * 2), (10, 10, 11, 255))
+            bgc.alpha_composite(s, (pad_in, pad_in)); s = bgc
         hh = int(s.size[1] * width / s.size[0])
         s = rounded(s.resize((width, hh), Image.LANCZOS), 22)
         ring = Image.new('RGBA', s.size, (0, 0, 0, 0))
@@ -69,8 +73,12 @@ def hero():
         c, pad = with_shadow(s, 34, (0, 30), 170)
         c = c.rotate(angle, resample=Image.BICUBIC, expand=True)
         im.alpha_composite(c, (pos[0] - pad, pos[1] - pad))
-    place('campaigns.png', 430, 4, (880, 96))
-    place('watching.png', 430, -3, (1230, 150))
+    if os.path.exists(os.path.join(REAL, 'queue.png')):
+        place(os.path.join(REAL, 'campaigns.png'), 540, 3, (890, 56), 14)
+        place(os.path.join(REAL, 'queue.png'), 560, -2, (1100, 372), 14)
+    else:
+        place(os.path.join(OUT, 'en', 'campaigns.png'), 430, 4, (880, 96))
+        place(os.path.join(OUT, 'en', 'watching.png'), 430, -3, (1230, 150))
     os.makedirs(OUT, exist_ok=True)
     im.convert('RGB').save(os.path.join(OUT, 'hero.png'), optimize=True)
 

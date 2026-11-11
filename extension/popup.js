@@ -127,7 +127,7 @@ function toggleTrack(c) {
 function gameSub(g, now) {
   const a = g.a || {};
   const parts = [];
-  if (a.current) parts.push(`${a.current.name}: ${a.current.cur}/${a.current.req} ${t('min')}`);
+  if (a.current) parts.push(`${a.current.name ? a.current.name + ': ' : ''}${a.current.cur}/${a.current.req} ${t('min')}`);
   if (g.status === 'claim' || a.toClaim) parts.push(t('sToClaim', { n: a.toClaim || 0 }) + (a.claimName ? ' (' + a.claimName + ')' : ''));
   if (a.total) parts.push(t('sClaimedOf', { a: a.claimed, b: a.total }));
   if (g.status === 'nodrops') parts.push(a.nextAt ? t('sStartAt', { date: dm(a.nextAt) }) : t('sNoCamp'));

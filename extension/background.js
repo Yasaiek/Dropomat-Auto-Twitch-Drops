@@ -178,7 +178,7 @@ function mapDrops(list, selfMap, oldDrops) {
     const self = (selfMap && selfMap[d.id]) || d.self;
     const old = oldById[d.id];
     const out = {
-      id: d.id, name: d.name || '', req: d.requiredMinutesWatched,
+      id: d.id, name: d.name || ((d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.name).filter(Boolean)[0]) || (old && old.name) || '', req: d.requiredMinutesWatched,
       hasSelf: false, cur: 0, claimed: false, preMet: undefined,
       pre: (d.preconditionDrops || []).map((p) => p && p.id).filter(Boolean),
       benefits: (d.benefitEdges || []).map((e) => e && e.benefit && e.benefit.id).filter(Boolean),

@@ -82,7 +82,7 @@ nav .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
 .d-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px 7px 7px; border-radius: 7px; background: var(--card); border: 1px solid var(--line); transition: border-color .25s, background .25s, transform .15s; }
 .d-row.q { border-color: rgba(96,205,255,.5); background: rgba(96,205,255,.07); }
 .d-row.tap { transform: scale(.98); }
-.d-art { width: 28px; height: 38px; border-radius: 4px; flex-shrink: 0; }
+.d-art { width: 28px; height: 38px; border-radius: 4px; flex-shrink: 0; background: #26262a center/cover no-repeat; }
 .d-txt { flex: 1; min-width: 0; }
 .d-txt b { display: block; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .d-txt i { display: block; font-style: normal; font-size: 11.5px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -202,7 +202,7 @@ footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--s
     <div class="d-view" id="dv1"></div>
     <div class="d-view" id="dv2" hidden>
       <div class="d-now"><b id="dnTitle"></b><i id="dnSub"></i><div class="d-bar"><div></div></div>
-        <div class="d-drops"><div class="d-drop"><span>🎁</span></div><div class="d-drop"><span>🗝️</span></div><div class="d-drop"><span>💎</span></div><div class="d-drop"><span>🛡️</span></div></div></div>
+        <div class="d-drops" id="dd"></div></div>
       <div id="dq" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
     <svg class="cursor" id="cur" viewBox="0 0 24 24"><path d="M5 3l14 8-6.2 1.8L10 19z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>
@@ -279,8 +279,8 @@ const FEAT_ICONS = [
   '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
 ];
 const GAMES = [
-  ['Starfall Outlaws', 'Season 4 Drops', '#3b82f6', '#1e3a8a'], ['Rust & Iron', 'Twitch Rivals', '#ef4444', '#7f1d1d'],
-  ['Deep Harbor', 'Launch Week', '#14b8a6', '#134e4a'], ['Neon Circuit', 'Chat Rewards', '#a855f7', '#4c1d95'], ['Frost Legion', 'Winter Event', '#f59e0b', '#78350f']
+  ['Crimson Desert', 'Crimson Desert DLC Week 2', 'crimson-desert'], ['Cyberpunk 2077', 'Quadra Paintjobs', 'cyberpunk-2077'],
+  ['Genshin Impact', 'V7.2 Genshin Impact Drops', 'genshin-impact'], ['Rainbow Six Siege', 'Twitch Drops', 'rainbow-six-siege'], ['Sea of Thieves', 'Twitch Drops', 'sea-of-thieves']
 ];
 
 function apply() {
@@ -318,7 +318,7 @@ setInterval(() => { if (!userPicked && document.getElementById('use').getBoundin
 const demo = document.getElementById('demo');
 let demoRun = 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-function row(g) { return '<div class="d-row"><div class="d-art" style="background:linear-gradient(160deg,' + g[2] + ',' + g[3] + ')"></div><div class="d-txt"><b>' + g[0] + '</b><i>' + g[1] + '</i></div><div class="d-num">+</div></div>'; }
+function row(g) { return '<div class="d-row"><div class="d-art" style="background-image:url(img/games/' + g[2] + '.png)"></div><div class="d-txt"><b>' + g[0] + '</b><i>' + g[1] + '</i></div><div class="d-num">+</div></div>'; }
 async function runDemo() {
   const my = ++demoRun;
   const u = UI[lang] || UI.en;
@@ -331,7 +331,7 @@ async function runDemo() {
     document.getElementById('dt1').className = 'on'; document.getElementById('dt2').className = '';
     v1.innerHTML = GAMES.map(row).join('');
     const rows = [...v1.querySelectorAll('.d-row')];
-    const order = [2, 0, 3];
+    const order = [1, 4, 3];
     if (reduce) { order.forEach((i, n) => { rows[i].classList.add('q'); rows[i].querySelector('.d-num').textContent = n + 1; }); demo.classList.remove('live'); return; }
     cur.style.transform = 'translate(300px, 330px)';
     await sleep(900);
@@ -352,14 +352,15 @@ async function runDemo() {
     v1.hidden = true; v2.hidden = false; demo.classList.remove('live');
     const first = GAMES[order[0]];
     document.getElementById('dnTitle').textContent = first[0];
-    document.getElementById('dnSub').textContent = (u.nWatching || 'Watching {url}').replace('{url}', 'twitch.tv/deepharbor_tv') + ' · 160p';
-    document.getElementById('dq').innerHTML = order.map((i, n) => '<div class="d-row' + (n === 0 ? ' q' : '') + '"><div class="d-num" style="' + (n ? 'border:0;background:var(--accent);color:var(--on)' : '') + '">' + (n + 1) + '</div><div class="d-art" style="background:linear-gradient(160deg,' + GAMES[i][2] + ',' + GAMES[i][3] + ')"></div><div class="d-txt"><b>' + GAMES[i][0] + '</b><i>' + (n === 0 ? u.stWatching : u.stPending) + '</i></div></div>').join('');
+    document.getElementById('dnSub').textContent = (u.nWatching || 'Watching {url}').replace('{url}', 'twitch.tv/cdprojektred') + ' · 160p';
+    document.getElementById('dq').innerHTML = order.map((i, n) => '<div class="d-row' + (n === 0 ? ' q' : '') + '"><div class="d-num" style="' + (n ? 'border:0;background:var(--accent);color:var(--on)' : '') + '">' + (n + 1) + '</div><div class="d-art" style="background-image:url(img/games/' + GAMES[i][2] + '.png)"></div><div class="d-txt"><b>' + GAMES[i][0] + '</b><i>' + (n === 0 ? u.stWatching : u.stPending) + '</i></div></div>').join('');
+    document.getElementById('dd').innerHTML = '<div class="d-drop"><span style="background:#101012 url(img/games/cp1.png) center/cover"></span></div>';
     const drops = [...v2.querySelectorAll('.d-drop')];
     drops.forEach((d) => { d.className = 'd-drop'; d.style.removeProperty('--p'); });
     void v2.offsetWidth; demo.classList.add('watch');
     for (let i = 0; i < drops.length && alive(); i++) {
       drops[i].classList.add('cur');
-      for (let p = 0; p <= 100 && alive(); p += 10) { drops[i].style.setProperty('--p', p + '%'); await sleep(125); }
+      for (let p = 0; p <= 100 && alive(); p += 4) { drops[i].style.setProperty('--p', p + '%'); await sleep(210); }
       drops[i].classList.remove('cur'); drops[i].classList.add('done');
     }
     await sleep(1800);
