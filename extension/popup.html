@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dropomat</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header>
+  <img src="icons/48.png" alt="" width="28" height="28">
+  <div class="title">
+    <strong>Dropomat</strong>
+    <span id="pill" class="pill">…</span>
+  </div>
+  <button id="toggle" class="btn primary">Start</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" data-tab="camps" role="tab"><span data-i18n="tabCamps"></span></button>
+  <button class="tab" data-tab="queue" role="tab"><span data-i18n="tabQueue"></span><span id="nQueue" class="count"></span></button>
+  <button class="tab" data-tab="tracked" role="tab"><span data-i18n="tabTracked"></span><span id="nTracked" class="count"></span></button>
+  <button class="tab" data-tab="settings" role="tab"><span data-i18n="tabSettings"></span></button>
+</nav>
+
+<div id="banners"></div>
+
+<section class="panel" data-panel="camps">
+  <div class="filter-row">
+    <input id="filter" type="text" data-i18n-ph="filterPh" autocomplete="off" spellcheck="false">
+    <button id="rescan" class="btn ghost sq" title="⟳">⟳</button>
+  </div>
+  <div class="hint sub" data-i18n="campsHint"></div>
+  <div id="camps" class="camps"></div>
+</section>
+
+<section class="panel" data-panel="queue">
+  <div id="now" class="card" hidden>
+    <div class="now-top">
+      <div>
+        <div id="nowTitle" class="now-title"></div>
+        <div id="nowSub" class="sub"></div>
+      </div>
+      <div class="now-actions">
+        <button id="skip" class="btn ghost" data-i18n="skip" data-i18n-title="skipTip"></button>
+        <button id="show" class="btn ghost" data-i18n="showWin" data-i18n-title="showWinTip"></button>
+      </div>
+    </div>
+    <div id="progWrap" hidden>
+      <div class="prog"><div id="progBar"></div></div>
+      <div class="prog-row"><span id="progName" class="sub"></span><span id="progNum" class="sub"></span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <h2 data-i18n="queue"></h2>
+      <span class="sub" data-i18n="queueHint"></span>
+    </div>
+    <div id="list" class="list"></div>
+    <div class="add">
+      <input id="q" type="text" data-i18n-ph="addPh" autocomplete="off" spellcheck="false">
+      <div id="sugg" class="sugg" hidden></div>
+    </div>
+    <button id="clearDone" class="btn ghost small" data-i18n="clearDone" hidden></button>
+  </div>
+</section>
+
+<section class="panel" data-panel="tracked">
+  <div class="hint sub" data-i18n="trackedHint"></div>
+  <div class="card">
+    <div id="trackedList" class="list"></div>
+    <div class="add">
+      <input id="tq" type="text" data-i18n-ph="trackPh" autocomplete="off" spellcheck="false">
+      <div id="tsugg" class="sugg" hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" data-panel="settings">
+  <div class="card">
+    <div class="settings">
+      <div class="row lang-row">
+        <span data-i18n="sLang"></span>
+        <button id="langBtn" class="btn lang-btn" aria-haspopup="listbox"></button>
+        <div id="langMenu" class="lang-menu" role="listbox" hidden></div>
+      </div>
+      <label class="row"><span><span data-i18n="sClaim"></span><small data-i18n="sClaimHint"></small></span><input type="checkbox" class="sw" data-set="autoClaim"></label>
+      <label class="row"><span data-i18n="sMin"></span><input type="checkbox" class="sw" data-set="minimized"></label>
+      <label class="row"><span data-i18n="sQuality"></span>
+        <select data-set="quality">
+          <option value="160p30" data-i18n="q160"></option>
+          <option value="360p30">360p</option>
+          <option value="480p30">480p</option>
+          <option value="auto" data-i18n="qKeep"></option>
+        </select></label>
+      <label class="row"><span data-i18n="sTrack"></span><input type="checkbox" class="sw" data-set="autoTrack"></label>
+      <label class="row"><span data-i18n="sTrackEvery"></span><span class="num"><input type="number" min="5" max="720" data-set="trackMin"> <span data-i18n="min"></span></span></label>
+      <label class="row"><span data-i18n="sCheckEvery"></span><span class="num"><input type="number" min="1" max="60" data-set="checkMin"> <span data-i18n="min"></span></span></label>
+      <label class="row"><span data-i18n="sStall"></span><span class="num"><input type="number" min="5" max="120" data-set="stallMin"> <span data-i18n="min"></span></span></label>
+      <label class="row"><span data-i18n="sNotify"></span><input type="checkbox" class="sw" data-set="notify"></label>
+      <label class="row"><span><span data-i18n="sUnmute"></span><small data-i18n="sUnmuteHint"></small></span><input type="checkbox" class="sw" data-set="autoUnmute"></label>
+    </div>
+  </div>
+  <details class="card" open>
+    <summary data-i18n="logTitle"></summary>
+    <div id="diag" class="sub diag"></div>
+    <div id="log" class="log"></div>
+    <button id="clearLog" class="btn ghost small" data-i18n="clear"></button>
+  </details>
+</section>
+
+<footer class="sub"><span id="foot"></span> <a id="inv" href="https://www.twitch.tv/drops/inventory" target="_blank" data-i18n="inventory"></a></footer>
+
+<script src="i18n.js"></script>
+<script src="locales/a.js"></script>
+<script src="locales/b.js"></script>
+<script src="locales/c.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

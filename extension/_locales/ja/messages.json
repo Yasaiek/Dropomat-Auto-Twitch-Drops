@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "Dropomat – Twitch ドロップ"
+  },
+  "extDesc": {
+    "message": "ドロップ対象の Twitch 配信を代わりに視聴します。ゲームをキューに入れて、そのまま遊び続けられます。"
+  }
+}

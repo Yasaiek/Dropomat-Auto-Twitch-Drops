@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "short_name": "Dropomat",
+  "version": "1.2.0",
+  "description": "__MSG_extDesc__",
+  "default_locale": "en",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4wFQ0SBVRpLbxv0qr3ETb56X2ABDt9zRbEfuBCSbAdfPzJdVK0hHEW4enkuzTeZ3W6tGajCFqGsyqKVs6fUqHOFOKbcS+CAor1cWsCed/iJbQECkJDoFHR3+bmW2Cw0fmjYfq+lYTR4thcYe3LtNHoeAfvguGdARB6kVei2QgVA/WY/UyH4knkIMcMj8C0k4N19ZCLgBHZ73bcnB6Dsj+zXfMfJieAeXtILZBVVYvbjwd3hvWtMdQ8gQjoKBr/vbw+rnmesONBr+aIdsdO5yumwKV6HxmSe0IDgo0LUxLu/MtLv/XFLQCERl4p+7RJtDZQk08skQAfA9U3JZww7ZqQIDAQAB",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "storage",
+    "alarms",
+    "tabs",
+    "cookies",
+    "notifications",
+    "debugger",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "https://www.twitch.tv/*",
+    "https://gql.twitch.tv/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Dropomat"
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.twitch.tv/*"
+      ],
+      "js": [
+        "inject.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.twitch.tv/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

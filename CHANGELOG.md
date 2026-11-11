@@ -1,0 +1,16 @@
+# Changelog
+
+## 1.2.0
+- Campaign list read from Twitch's own drops page plus a public scan, so campaigns no longer go missing.
+- Streams are verified to really carry the game's campaign before watching.
+- Interface in 12 languages with a flag picker.
+- Optional auto-claim, with an account-link check and an alert instead of claiming when the link is not confirmed.
+- Update check against the project site.
+- New icon.
+
+## 1.1.0
+- Tabs: Campaigns, Watching, Tracked, Settings. Click campaigns to build the queue, drag to reorder.
+- Game covers and drop icons with progress.
+
+## 1.0.0
+- First version: queue, automatic stream switching, tracking of new campaigns.

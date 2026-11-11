@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dropomat – Auto Twitch Drops Collector</title>
+<meta name="description" content="Dropomat – automatic Twitch Drops collector. A browser extension that watches drop streams for you: queue the games, track new campaigns, optional auto-claim.">
+<meta property="og:title" content="Dropomat – Auto Twitch Drops Collector">
+<meta property="og:description" content="Watches Twitch drop streams for you. Queue the games and keep playing.">
+<meta property="og:image" content="img/hero.png>
+<link rel="icon" href="icon.png">
+<style>
+:root {
+  --bg: #08080a; --card: #131316; --card2: #1a1a1f; --line: rgba(255,255,255,.08); --line2: rgba(255,255,255,.14);
+  --text: #f4f4f6; --sub: #a5a5ad; --accent: #60cdff; --violet: #7c5cff; --ok: #6ccb5f; --warn: #f5c84c; --on: #00232f;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; }
+.wrap { width: min(1080px, calc(100% - 32px)); margin: 0 auto; }
+h1, h2, h3 { font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif; line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 26px; }
+section { padding: 72px 0; position: relative; }
+.sub { color: var(--sub); }
+
+/* tło: wolno płynące plamy światła */
+.orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .32; animation: drift 26s ease-in-out infinite alternate; }
+.orb.a { width: 520px; height: 520px; background: #2a6bff; left: -140px; top: -160px; }
+.orb.b { width: 460px; height: 460px; background: var(--violet); right: -120px; top: 120px; animation-duration: 32s; animation-delay: -8s; }
+.orb.c { width: 380px; height: 380px; background: #17b6d6; left: 35%; top: 620px; opacity: .16; animation-duration: 38s; }
+@keyframes drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(60px, 50px) scale(1.15); } }
+
+/* pasek górny */
+nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px); background: rgba(8,8,10,.72); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; color: var(--text); }
+.brand img { width: 30px; height: 30px; border-radius: 8px; }
+.grow { flex: 1; }
+.navlink { color: var(--sub); font-size: 14px; }
+.navlink:hover { color: var(--text); text-decoration: none; }
+
+.lang { position: relative; }
+.lang-btn { display: flex; align-items: center; gap: 8px; font: inherit; font-size: 14px; color: var(--text); background: var(--card); border: 1px solid var(--line2); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.lang-btn:hover { background: var(--card2); }
+.flag svg { display: block; border-radius: 3px; box-shadow: 0 0 0 1px rgba(255,255,255,.16); }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); width: 330px; max-width: calc(100vw - 32px); display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 6px; background: #1c1c21; border: 1px solid var(--line2); border-radius: 10px; box-shadow: 0 18px 44px rgba(0,0,0,.6); }
+.lang-menu[hidden] { display: none; }
+.lang-opt { display: flex; align-items: center; gap: 9px; font: inherit; font-size: 14px; color: var(--text); background: none; border: 1px solid transparent; border-radius: 6px; padding: 7px 9px; cursor: pointer; text-align: left; }
+.lang-opt:hover { background: rgba(255,255,255,.07); }
+.lang-opt.on { border-color: rgba(96,205,255,.5); background: rgba(96,205,255,.08); }
+
+/* hero */
+.hero { padding: 64px 0 40px; }
+.hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+.hero .eyebrow { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(96,205,255,.35); background: rgba(96,205,255,.08); padding: 6px 12px; border-radius: 999px; margin-bottom: 14px; }
+.hero h1 { font-size: clamp(44px, 7vw, 76px); letter-spacing: -.02em; background: linear-gradient(100deg, #fff 20%, var(--accent) 55%, var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.lead { font-size: clamp(17px, 2.2vw, 21px); color: #d6d6dc; margin: 18px 0 28px; max-width: 30em; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 9px; font: inherit; font-weight: 600; padding: 12px 20px; border-radius: 10px; border: 1px solid var(--line2); background: var(--card); color: var(--text); cursor: pointer; transition: transform .15s, background .15s, box-shadow .15s; }
+.btn:hover { text-decoration: none; transform: translateY(-2px); background: var(--card2); }
+.btn.primary { background: linear-gradient(100deg, var(--accent), #8fb4ff); color: var(--on); border-color: transparent; box-shadow: 0 10px 30px rgba(96,205,255,.25); }
+.btn.primary:hover { box-shadow: 0 14px 38px rgba(96,205,255,.38); }
+.meta { margin-top: 18px; font-size: 14px; color: var(--sub); }
+
+/* animowana makieta okienka */
+.demo { justify-self: center; width: min(390px, 100%); background: #0a0a0b; border: 1px solid var(--line2); border-radius: 16px; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03); position: relative; animation: float 7s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-10px); } }
+.d-head { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+.d-head img { width: 26px; height: 26px; border-radius: 7px; }
+.d-head b { font-size: 15px; }
+.d-pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; color: var(--accent); border: 1px solid rgba(96,205,255,.35); background: rgba(96,205,255,.08); opacity: 0; transition: opacity .3s; }
+.demo.run .d-pill { opacity: 1; }
+.d-tabs { display: flex; gap: 2px; padding: 3px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; margin-bottom: 10px; }
+.d-tabs span { flex: 1; text-align: center; padding: 5px 2px; border-radius: 5px; color: var(--sub); transition: background .25s, color .25s; }
+.d-tabs span.on { background: var(--card2); color: var(--text); font-weight: 600; }
+.d-view { display: flex; flex-direction: column; gap: 6px; min-height: 276px; }
+.d-view[hidden] { display: none; }
+.d-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px 7px 7px; border-radius: 7px; background: var(--card); border: 1px solid var(--line); transition: border-color .25s, background .25s, transform .15s; }
+.d-row.q { border-color: rgba(96,205,255,.5); background: rgba(96,205,255,.07); }
+.d-row.tap { transform: scale(.98); }
+.d-art { width: 28px; height: 38px; border-radius: 4px; flex-shrink: 0; }
+.d-txt { flex: 1; min-width: 0; }
+.d-txt b { display: block; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d-txt i { display: block; font-style: normal; font-size: 11.5px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d-num { width: 25px; height: 25px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 12.5px; color: #5d5d63; border: 1px dashed #3a3a40; flex-shrink: 0; }
+.d-row.q .d-num { border: 0; background: var(--accent); color: var(--on); animation: pop .35s cubic-bezier(.3,1.8,.5,1); }
+@keyframes pop { from { transform: scale(.3); } to { transform: scale(1); } }
+.d-now { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 11px; }
+.d-now b { font-size: 14px; }
+.d-now i { display: block; font-style: normal; font-size: 12px; color: var(--sub); }
+.d-bar { height: 4px; border-radius: 9px; background: #2a2a2e; margin-top: 10px; overflow: hidden; }
+.d-bar div { height: 100%; width: 0; background: var(--accent); border-radius: 9px; }
+.demo.watch .d-bar div { animation: fill 5.5s linear forwards; }
+@keyframes fill { to { width: 100%; } }
+.d-drops { display: flex; gap: 7px; margin-top: 9px; }
+.d-drop { width: 30px; height: 30px; border-radius: 8px; padding: 2px; background: #34343a; position: relative; transition: background .4s; }
+.d-drop span { display: block; width: 100%; height: 100%; border-radius: 6px; background: #101012; display: grid; place-items: center; font-size: 14px; }
+.d-drop.done { background: var(--ok); }
+.d-drop.done::after { content: "✓"; position: absolute; right: -4px; bottom: -4px; width: 14px; height: 14px; border-radius: 50%; background: var(--ok); color: #0b0b0c; font: 700 9px/14px system-ui; text-align: center; box-shadow: 0 0 0 2px var(--card); animation: pop .35s cubic-bezier(.3,1.8,.5,1); }
+.d-drop.cur { background: conic-gradient(var(--accent) var(--p, 0%), #34343a 0); }
+.cursor { position: absolute; width: 22px; height: 22px; left: 0; top: 0; pointer-events: none; transition: transform .7s cubic-bezier(.5,0,.2,1); z-index: 3; opacity: 0; }
+.demo.live .cursor { opacity: 1; }
+
+/* karty funkcji */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01)), var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; transition: transform .2s, border-color .2s; }
+.card:hover { transform: translateY(-4px); border-color: rgba(96,205,255,.35); }
+.card h3 { font-size: 18px; margin: 12px 0 6px; }
+.card p { margin: 0; color: var(--sub); font-size: 15px; }
+.ico { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(96,205,255,.1); color: var(--accent); }
+.ico svg { width: 22px; height: 22px; }
+
+/* instalacja */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; counter-reset: step; }
+.step { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; position: relative; counter-increment: step; }
+.step::before { content: counter(step); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--on); font-weight: 700; margin-bottom: 12px; }
+.step p { margin: 0; font-size: 15px; }
+.step code, code { font-family: Consolas, "Cascadia Mono", monospace; font-size: .92em; background: rgba(255,255,255,.07); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+.shot { margin-top: 22px; border-radius: 14px; border: 1px solid var(--line2); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5); background: var(--card); }
+.shot img { display: block; width: 100%; }
+.note { margin-top: 16px; color: var(--sub); font-size: 14px; }
+
+/* jak używać */
+.use { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+.use-tabs { display: flex; flex-direction: column; gap: 8px; }
+.use-tab { text-align: left; font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color .2s, background .2s; }
+.use-tab b { display: block; margin-bottom: 3px; }
+.use-tab span { color: var(--sub); font-size: 14px; }
+.use-tab.on { border-color: rgba(96,205,255,.55); background: rgba(96,205,255,.06); }
+.use-img { justify-self: center; width: min(430px, 100%); border-radius: 14px; border: 1px solid var(--line2); overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+.use-img img { display: block; width: 100%; animation: fade .35s; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } }
+
+/* faq + zgłoszenia */
+.faq { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+details[open] { border-color: var(--line2); }
+summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::after { content: "+"; color: var(--accent); font-size: 20px; line-height: 1; transition: transform .2s; }
+details[open] summary::after { transform: rotate(45deg); }
+summary::-webkit-details-marker { display: none; }
+details p { margin: 10px 0 0; color: var(--sub); font-size: 15px; }
+.bug { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; background: linear-gradient(110deg, rgba(124,92,255,.16), rgba(96,205,255,.1)), var(--card); border: 1px solid var(--line2); border-radius: 16px; padding: 28px; }
+.bug h2 { margin-bottom: 6px; }
+.bug p { margin: 0; color: #cfcfd6; max-width: 38em; }
+footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--sub); font-size: 14px; text-align: center; }
+
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s, transform .6s; }
+.reveal.in { opacity: 1; transform: none; }
+@media (max-width: 860px) {
+  .hero .wrap, .use { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .faq { grid-template-columns: 1fr; }
+  section { padding: 52px 0; }
+  .navlink { display: none; }
+}
+@media (max-width: 540px) { .grid, .steps { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .orb, .demo, .demo.watch .d-bar div { animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><img src="icon.png" alt="">Dropomat</a>
+  <span class="grow"></span>
+  <a class="navlink" href="#install" data-t="installTitle"></a>
+  <a class="navlink" href="#use" data-t="howTitle"></a>
+  <a class="navlink" href="#bug" data-t="report"></a>
+  <div class="lang">
+    <button class="lang-btn" id="langBtn" aria-haspopup="listbox"></button>
+    <div class="lang-menu" id="langMenu" role="listbox" hidden></div>
+  </div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <div class="eyebrow">Auto Twitch Drops Collector</div>
+    <h1>Dropomat</h1>
+    <p class="lead" data-t="tagline"></p>
+    <div class="cta">
+      <a class="btn primary" id="dl" href="dropomat.zip" download>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>
+        <span data-t="download"></span> (ZIP)</a>
+      <a class="btn" id="gh" href="#" target="_blank" rel="noopener"><span data-t="github"></span></a>
+    </div>
+    <div class="meta"><span data-t="version"></span> __VERSION__ · <span data-t="worksIn"></span></div>
+  </div>
+
+  <div class="demo" id="demo" aria-hidden="true">
+    <div class="d-head"><img src="icon.png" alt=""><b>Dropomat</b><span class="d-pill" data-u="pillOn"></span></div>
+    <div class="d-tabs"><span id="dt1" class="on" data-u="tabCamps"></span><span id="dt2" data-u="tabQueue"></span><span data-u="tabTracked"></span><span data-u="tabSettings"></span></div>
+    <div class="d-view" id="dv1"></div>
+    <div class="d-view" id="dv2" hidden>
+      <div class="d-now"><b id="dnTitle"></b><i id="dnSub"></i><div class="d-bar"><div></div></div>
+        <div class="d-drops"><div class="d-drop"><span>🎁</span></div><div class="d-drop"><span>🗝️</span></div><div class="d-drop"><span>💎</span></div><div class="d-drop"><span>🛡️</span></div></div></div>
+      <div id="dq" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+    <svg class="cursor" id="cur" viewBox="0 0 24 24"><path d="M5 3l14 8-6.2 1.8L10 19z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>
+  </div>
+</div></header>
+
+<section id="features"><div class="wrap">
+  <h2 class="reveal" data-t="featTitle"></h2>
+  <div class="grid" id="feat"></div>
+</div></section>
+
+<section id="install"><div class="wrap">
+  <h2 class="reveal" data-t="installTitle"></h2>
+  <div class="steps reveal"><div class="step"><p data-t="i1"></p></div><div class="step"><p data-t="i2" data-code="chrome://extensions"></p></div><div class="step"><p data-t="i3"></p></div><div class="step"><p data-t="i4"></p></div></div>
+  <div class="shot reveal"><img src="img/install.png" alt="" loading="lazy"></div>
+  <p class="note reveal"><b data-t="updateTitle"></b> – <span data-t="update" data-code="chrome://extensions"></span></p>
+</div></section>
+
+<section id="use"><div class="wrap">
+  <h2 class="reveal" data-t="howTitle"></h2>
+  <div class="use reveal">
+    <div class="use-tabs" id="useTabs"></div>
+    <div class="use-img"><img id="useImg" src="img/en/campaigns.png" alt=""></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2 class="reveal" data-t="faqTitle"></h2>
+  <div class="faq reveal" id="faqList"></div>
+</div></section>
+
+<section id="bug"><div class="wrap">
+  <div class="bug reveal">
+    <div><h2 data-t="bugTitle"></h2><p data-t="bugText"></p></div>
+    <a class="btn primary" id="issue" href="#" target="_blank" rel="noopener"><span data-t="report"></span></a>
+  </div>
+</div></section>
+
+<footer><div class="wrap"><span data-t="disclaimer"></span> · MIT</div></footer>
+
+<script>
+const STR = __STRINGS__;
+const UI = __UI__;
+const LANGS = __LANGS__;
+const FLAGS = __FLAGS__;
+const SHOT_LANGS = __SHOT_LANGS__;
+const flag = (c) => '<span class="flag"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20" width="22" height="15">' + FLAGS[c] + '</svg></span>';
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// repozytorium wyliczane z adresu GitHub Pages: https://UŻYTKOWNIK.github.io/REPO/
+let repo = '';
+if (location.hostname.endsWith('.github.io')) {
+  const user = location.hostname.split('.')[0];
+  const name = location.pathname.split('/').filter(Boolean)[0] || location.hostname;
+  repo = 'https://github.com/' + user + '/' + name;
+}
+document.getElementById('gh').href = repo || 'https://github.com';
+document.getElementById('issue').href = repo ? repo + '/issues/new/choose' : 'https://github.com';
+
+let lang = 'en';
+try {
+  const q = new URLSearchParams(location.search).get('lang');
+  const saved = localStorage.getItem('lang');
+  const nav = (navigator.language || 'en').toLowerCase().slice(0, 2);
+  lang = [q, saved, nav].find((x) => x && STR[x]) || 'en';
+} catch (e) {}
+
+const FEAT_ICONS = [
+  '<path d="M4 6h16M4 12h10M4 18h6"/><circle cx="19" cy="15" r="3"/>',
+  '<rect x="3" y="5" width="18" height="13" rx="2"/><path d="M10 9.5v5l4-2.5z" fill="currentColor"/>',
+  '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.9 6.6 19.8l1.1-6.1L3.2 9.4l6.1-.8z"/>',
+  '<path d="M4 19V9m6 10V5m6 14v-7m4 7H2"/>',
+  '<path d="M20 12v8H4v-8m-2-5h20v5H2zM12 7v13M12 7S9 2 6.5 3.5 8 7 12 7zm0 0s3-5 5.5-3.5S16 7 12 7z"/>',
+  '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'
+];
+const GAMES = [
+  ['Starfall Outlaws', 'Season 4 Drops', '#3b82f6', '#1e3a8a'], ['Rust & Iron', 'Twitch Rivals', '#ef4444', '#7f1d1d'],
+  ['Deep Harbor', 'Launch Week', '#14b8a6', '#134e4a'], ['Neon Circuit', 'Chat Rewards', '#a855f7', '#4c1d95'], ['Frost Legion', 'Winter Event', '#f59e0b', '#78350f']
+];
+
+function apply() {
+  const s = STR[lang], u = UI[lang] || UI.en;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((n) => {
+    const txt = s[n.dataset.t] || STR.en[n.dataset.t] || '';
+    if (n.dataset.code && txt.includes(n.dataset.code)) n.innerHTML = esc(txt).replace(n.dataset.code, '<code>' + n.dataset.code + '</code>');
+    else n.textContent = txt;
+  });
+  document.querySelectorAll('[data-u]').forEach((n) => { n.textContent = u[n.dataset.u] || ''; });
+  document.title = 'Dropomat – ' + s.tagline;
+  document.getElementById('feat').innerHTML = [1, 2, 3, 4, 5, 6].map((i) =>
+    '<div class="card reveal in"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + FEAT_ICONS[i - 1] + '</svg></div><h3>' + esc(s['f' + i + 't']) + '</h3><p>' + esc(s['f' + i]) + '</p></div>').join('');
+  document.getElementById('faqList').innerHTML = [1, 2, 3, 4].map((i) => '<details' + (i === 1 ? ' open' : '') + '><summary>' + esc(s['q' + i]) + '</summary><p>' + esc(s['a' + i]) + '</p></details>').join('');
+  const shots = ['campaigns', 'watching', 'tracked', 'settings'];
+  const dir = SHOT_LANGS.includes(lang) ? lang : 'en';
+  const tabs = document.getElementById('useTabs');
+  tabs.innerHTML = [1, 2, 3, 4].map((i) => '<button class="use-tab' + (i === useIdx ? ' on' : '') + '" data-i="' + i + '"><b>' + esc(s['h' + i + 't']) + '</b><span>' + esc(s['h' + i]) + '</span></button>').join('');
+  const img = document.getElementById('useImg');
+  const show = (i) => { useIdx = i; img.src = 'img/' + dir + '/' + shots[i - 1] + '.png'; tabs.querySelectorAll('.use-tab').forEach((b) => b.classList.toggle('on', Number(b.dataset.i) === i)); };
+  tabs.querySelectorAll('.use-tab').forEach((b) => { b.onclick = () => { userPicked = true; show(Number(b.dataset.i)); }; });
+  show(useIdx);
+  const cur = LANGS.find((l) => l[0] === lang);
+  document.getElementById('langBtn').innerHTML = flag(lang) + '<span>' + esc(cur[1]) + '</span><span style="color:var(--sub);font-size:11px">▾</span>';
+  document.getElementById('langMenu').innerHTML = LANGS.map((l) => '<button class="lang-opt' + (l[0] === lang ? ' on' : '') + '" role="option" data-l="' + l[0] + '">' + flag(l[0]) + '<span>' + esc(l[1]) + '</span></button>').join('');
+  document.querySelectorAll('.lang-opt').forEach((b) => { b.onclick = () => { lang = b.dataset.l; try { localStorage.setItem('lang', lang); } catch (e) {} document.getElementById('langMenu').hidden = true; apply(); resetDemo(); }; });
+}
+let useIdx = 1, userPicked = false;
+document.getElementById('langBtn').onclick = (e) => { e.stopPropagation(); const m = document.getElementById('langMenu'); m.hidden = !m.hidden; };
+document.addEventListener('click', (e) => { if (!e.target.closest('.lang')) document.getElementById('langMenu').hidden = true; });
+setInterval(() => { if (!userPicked && document.getElementById('use').getBoundingClientRect().top < innerHeight) { const b = document.querySelector('.use-tab[data-i="' + (useIdx % 4 + 1) + '"]'); if (b) { useIdx = useIdx % 4 + 1; b.click(); userPicked = false; } } }, 4200);
+
+// ── animowana makieta: klikanie gier → numery → oglądanie z rosnącym postępem
+const demo = document.getElementById('demo');
+let demoRun = 0;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+function row(g) { return '<div class="d-row"><div class="d-art" style="background:linear-gradient(160deg,' + g[2] + ',' + g[3] + ')"></div><div class="d-txt"><b>' + g[0] + '</b><i>' + g[1] + '</i></div><div class="d-num">+</div></div>'; }
+async function runDemo() {
+  const my = ++demoRun;
+  const u = UI[lang] || UI.en;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const v1 = document.getElementById('dv1'), v2 = document.getElementById('dv2'), cur = document.getElementById('cur');
+  const alive = () => my === demoRun;
+  while (alive()) {
+    demo.className = 'demo live';
+    v1.hidden = false; v2.hidden = true;
+    document.getElementById('dt1').className = 'on'; document.getElementById('dt2').className = '';
+    v1.innerHTML = GAMES.map(row).join('');
+    const rows = [...v1.querySelectorAll('.d-row')];
+    const order = [2, 0, 3];
+    if (reduce) { order.forEach((i, n) => { rows[i].classList.add('q'); rows[i].querySelector('.d-num').textContent = n + 1; }); demo.classList.remove('live'); return; }
+    cur.style.transform = 'translate(300px, 330px)';
+    await sleep(900);
+    for (let n = 0; n < order.length && alive(); n++) {
+      const r = rows[order[n]];
+      const box = r.getBoundingClientRect(), base = demo.getBoundingClientRect();
+      cur.style.transform = 'translate(' + (box.right - base.left - 40) + 'px,' + (box.top - base.top + 16) + 'px)';
+      await sleep(820);
+      r.classList.add('tap'); await sleep(110); r.classList.remove('tap');
+      r.classList.add('q'); r.querySelector('.d-num').textContent = n + 1;
+      await sleep(520);
+    }
+    if (!alive()) return;
+    await sleep(700);
+    // start → zakładka „Oglądane”
+    demo.classList.add('run');
+    document.getElementById('dt1').className = ''; document.getElementById('dt2').className = 'on';
+    v1.hidden = true; v2.hidden = false; demo.classList.remove('live');
+    const first = GAMES[order[0]];
+    document.getElementById('dnTitle').textContent = first[0];
+    document.getElementById('dnSub').textContent = (u.nWatching || 'Watching {url}').replace('{url}', 'twitch.tv/deepharbor_tv') + ' · 160p';
+    document.getElementById('dq').innerHTML = order.map((i, n) => '<div class="d-row' + (n === 0 ? ' q' : '') + '"><div class="d-num" style="' + (n ? 'border:0;background:var(--accent);color:var(--on)' : '') + '">' + (n + 1) + '</div><div class="d-art" style="background:linear-gradient(160deg,' + GAMES[i][2] + ',' + GAMES[i][3] + ')"></div><div class="d-txt"><b>' + GAMES[i][0] + '</b><i>' + (n === 0 ? u.stWatching : u.stPending) + '</i></div></div>').join('');
+    const drops = [...v2.querySelectorAll('.d-drop')];
+    drops.forEach((d) => { d.className = 'd-drop'; d.style.removeProperty('--p'); });
+    void v2.offsetWidth; demo.classList.add('watch');
+    for (let i = 0; i < drops.length && alive(); i++) {
+      drops[i].classList.add('cur');
+      for (let p = 0; p <= 100 && alive(); p += 10) { drops[i].style.setProperty('--p', p + '%'); await sleep(125); }
+      drops[i].classList.remove('cur'); drops[i].classList.add('done');
+    }
+    await sleep(1800);
+  }
+}
+function resetDemo() { runDemo(); }
+
+// pojawianie się sekcji przy przewijaniu
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+document.querySelectorAll('.reveal').forEach((n) => io.observe(n));
+
+apply();
+runDemo();
+</script>
+</body>
+</html>

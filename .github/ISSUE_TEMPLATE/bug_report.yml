@@ -1,0 +1,34 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead? You can write in your own language.
+    validations:
+      required: true
+  - type: input
+    id: game
+    attributes:
+      label: Game / campaign
+      placeholder: e.g. War Thunder – WTCS Pro Grand Finals
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Open Dropomat → Settings → Log and paste the first line ("Read …") and the last few entries.
+      render: text
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: e.g. Chrome 142, Opera GX 125
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Dropomat version
+      placeholder: e.g. 1.2.0
