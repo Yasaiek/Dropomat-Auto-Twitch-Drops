@@ -352,6 +352,8 @@ async function refreshDrops(st) {
   const camps = {};
   const selfMap = {};
   const diag = { page: 0, scan: 0, api: 0, inv: 0, streams: 0, det: 0, noimg: 0 };
+  let invKnown = false;   // czy wiemy na pewno, które kampanie są w ekwipunku „w toku”
+  const inProg = {};
   const mineNow = [...(st.games || []), ...(st.tracked || [])];
   const merge = (c, src) => {
     if (!c || !c.id) return null;
@@ -387,7 +389,11 @@ async function refreshDrops(st) {
       // nagrody są w ekwipunku – o ile był wbity do końca, nie mamy o nim własnych danych, albo nagrodę
       // przyznano już po naszym ostatnim odczycie (dobity i odebrany między sprawdzeniami).
       for (const d of c.drops || []) {
-        if (d.claimed || !d.benefits.length) continue;
+        if (d.claimed) continue;
+        // Wbity do końca drop, którego kampanii nie ma już w ekwipunku „w toku” (oba odczyty ekwipunku się udały
+        // i żaden jej nie pokazuje): Twitch trzyma tam kampanię, dopóki jest coś do odebrania – więc został odebrany.
+        if (invKnown && !c.inInv && !inProg[c.id] && d.hasSelf && d.cur >= d.req && !selfMap[d.id]) { d.claimed = true; continue; }
+        if (!d.benefits.length) continue;
         if (c.inInv && d.hasSelf && selfMap[d.id]) continue;
         const awarded = (since) => d.benefits.every((b) => claimed[b] && claimed[b] >= since);
         if (!awarded(c.startAt)) continue;
@@ -481,7 +487,9 @@ async function refreshDrops(st) {
     progRes.data.currentUser.inventory.dropCampaignsInProgress;
   let progKnown = Array.isArray(progList);
   const addSelf = (drops) => { for (const d of drops || []) if (d && d.id && d.self) selfMap[d.id] = d.self; };
-  for (const c of progList || []) if (c) addSelf(c.timeBasedDrops);
+  for (const c of progList || []) if (c) { addSelf(c.timeBasedDrops); if (c.id) inProg[c.id] = true; }
+  for (const c of inv.dropCampaignsInProgress || []) if (c && c.id) inProg[c.id] = true;
+  invKnown = Array.isArray(progList) && Array.isArray(inv.dropCampaignsInProgress);
   for (const c of inv.dropCampaignsInProgress || []) {
     if (!realCamp(c)) continue;
     const b = merge(c, 'inv');

@@ -158,6 +158,9 @@ write(os.path.join(ROOT, '.gitattributes'), '* -text\n')
 write(os.path.join(ROOT, 'CHANGELOG.md'), f'''# Changelog
 
 ## {version}
+- A finished drop that you already claimed is no longer shown as "to claim" after its campaign leaves your Twitch inventory.
+
+## 1.2.2
 - Drop names and icons are remembered, so they stay visible when a campaign's streams go offline or Twitch's campaign page fails to load.
 - A failed read of the campaign page no longer drops campaigns from the list.
 
