@@ -1,0 +1,30 @@
+# Publishes a GitHub release with the extension ZIP whenever main carries a version that has no release yet.
+name: Release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create the release for the current version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(python3 -c "import json;print(json.load(open('extension/manifest.json'))['version'])")
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists - nothing to do."
+            exit 0
+          fi
+          {
+            awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md
+            echo
+            echo "**Install:** download \`dropomat-$VERSION.zip\` below, unpack it, open \`chrome://extensions\`, turn on Developer mode, click \"Load unpacked\" and pick the unpacked folder."
+          } > notes.md
+          cp docs/dropomat.zip "dropomat-$VERSION.zip"
+          gh release create "$TAG" "dropomat-$VERSION.zip" --title "Dropomat $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
