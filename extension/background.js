@@ -195,6 +195,31 @@ function mapDrops(list, selfMap, oldDrops) {
   });
 }
 
+// Różne źródła podają dropy z różną dokładnością (strona kampanii bywa bez nazw i obrazków nagród),
+// więc listy łączymy: zostaje pierwsza, a z kolejnych dobieramy to, czego w niej brakowało.
+const hasBen = (d) => !!d && (d.benefitEdges || []).some((e) => e && e.benefit && e.benefit.imageAssetURL);
+const poorDrops = (list) => !Array.isArray(list) || list.some((d) => d && !hasBen(d));
+function mergeRaw(a, b) {
+  if (!Array.isArray(a) || !a.length) return Array.isArray(b) ? b : a;
+  if (!Array.isArray(b) || !b.length) return a;
+  const by = {};
+  for (const d of b) if (d && d.id) by[d.id] = d;
+  const out = a.map((d) => {
+    const o = d && d.id ? by[d.id] : null;
+    if (!o) return d;
+    delete by[d.id];
+    const r = Object.assign({}, d);
+    if (!r.name && o.name) r.name = o.name;
+    if (!(r.requiredMinutesWatched > 0) && o.requiredMinutesWatched > 0) r.requiredMinutesWatched = o.requiredMinutesWatched;
+    if (!hasBen(r) && (o.benefitEdges || []).length) r.benefitEdges = o.benefitEdges;
+    if (!(r.preconditionDrops || []).length && (o.preconditionDrops || []).length) r.preconditionDrops = o.preconditionDrops;
+    if (!r.self && o.self) r.self = o.self;
+    return r;
+  });
+  for (const d of Object.values(by)) out.push(d);
+  return out;
+}
+
 function baseCamp(c, old) {
   return {
     id: c.id, name: c.name || (old && old.name) || '', status: c.status || '',
@@ -205,7 +230,8 @@ function baseCamp(c, old) {
     connected: old ? old.connected : undefined, // true/false, a gdy nie wiemy – undefined
     drops: old ? old.drops : null,
     channels: old ? old.channels : null,
-    detail: !!(old && old.detail), detailTries: (old && old.detailTries) || 0,
+    detail: !!(old && old.detail), detailTries: (old && old.detailTries) || 0, fillTries: (old && old.fillTries) || 0,
+    chanIds: old ? old.chanIds || null : null,
     inInv: false, src: ''
   };
 }
@@ -292,7 +318,15 @@ async function capturePage(st, now) {
     if (tabId != null) { try { await chrome.tabs.remove(tabId); } catch (e) {} }
   }
   const camps = {};
-  for (const c of pageBuf.list) if (realCamp(c) && hasTimed(c)) camps[c.id] = Object.assign({}, camps[c.id] || {}, c);
+  for (const c of pageBuf.list) {
+    if (!realCamp(c) || !hasTimed(c)) continue;
+    const prev = camps[c.id] || {};
+    const next = Object.assign({}, prev);
+    for (const k of Object.keys(c)) if (c[k] != null && k !== 'timeBasedDrops') next[k] = c[k];
+    const drops = mergeRaw(prev.timeBasedDrops, c.timeBasedDrops);
+    if (Array.isArray(drops)) next.timeBasedDrops = drops;
+    camps[c.id] = next;
+  }
   pageBuf = null;
   st.page = { at: now, camps, n: Object.keys(camps).length };
 }
@@ -319,10 +353,11 @@ async function refreshDrops(st) {
       if (!b.gameSlug && c.game && c.game.slug) b.gameSlug = c.game.slug;
       if (!b.gameIcon && c.game && c.game.boxArtURL) b.gameIcon = fixArt(c.game.boxArtURL);
     }
-    if (!b.rawDrops && Array.isArray(c.timeBasedDrops)) b.rawDrops = c.timeBasedDrops;
+    if (Array.isArray(c.timeBasedDrops)) b.rawDrops = mergeRaw(b.rawDrops, c.timeBasedDrops);
     if (c.self && typeof c.self.isAccountConnected === 'boolean') b.connected = c.self.isAccountConnected;
     if (c.allow && Array.isArray(c.allow.channels) && c.allow.isEnabled !== false) {
       b.channels = c.allow.channels.map((ch) => lc(ch && ch.name)).filter(Boolean); b.detail = true;
+      b.chanIds = c.allow.channels.map((ch) => ch && ch.id).filter(Boolean).slice(0, 6);
     }
     return b;
   };
@@ -421,7 +456,7 @@ async function refreshDrops(st) {
     if (!realCamp(c)) continue;
     const b = merge(c, 'inv');
     b.inInv = true;
-    if (Array.isArray(c.timeBasedDrops)) b.rawDrops = c.timeBasedDrops;
+    if (Array.isArray(c.timeBasedDrops)) b.rawDrops = mergeRaw(c.timeBasedDrops, b.rawDrops); // ekwipunek ma pierwszeństwo
   }
   if (Array.isArray(inv.gameEventDrops)) {
     const claimed = {};
@@ -431,19 +466,36 @@ async function refreshDrops(st) {
 
   // 5) szczegóły (dozwolone kanały, lista dropów) – tylko dla gier z kolejki/śledzonych, raz na kampanię
   const relevant = Object.values(camps).filter((c) => isActive(c, now) && mine.some((g) => matches(c, g)));
-  const need = relevant.filter((c) => !c.detail && c.detailTries < 3).slice(0, 24);
+  const lacking = (c) => (c.rawDrops ? poorDrops(c.rawDrops) : !c.drops || c.drops.some((d) => !d.img));
+  const need = relevant.filter((c) => (!c.detail && c.detailTries < 3) || (c.detail && lacking(c) && c.fillTries < 4)).slice(0, 24);
   for (const part of chunk(need, 8)) {
     const res = await tryGql(qDetail(part.map((c) => c.id)), token);
     const d = (res.data && res.data.currentUser) || {};
     part.forEach((c, k) => {
       const x = d['c' + k];
-      c.detailTries++;
+      if (c.detail) c.fillTries++; else c.detailTries++;
       if (!x) return;
-      const allow = x.allow || {};
-      c.channels = allow.isEnabled === false ? [] : (allow.channels || []).map((ch) => lc(ch && ch.name)).filter(Boolean);
-      if (!c.rawDrops) c.rawDrops = x.timeBasedDrops;
+      if (!c.detail) { // kanały ustawiamy tylko, gdy ich jeszcze nie znaliśmy
+        const allow = x.allow || {};
+        c.channels = allow.isEnabled === false ? [] : (allow.channels || []).map((ch) => lc(ch && ch.name)).filter(Boolean);
+        if (Array.isArray(allow.channels)) c.chanIds = allow.channels.map((ch) => ch && ch.id).filter(Boolean).slice(0, 6);
+      }
+      if (Array.isArray(x.timeBasedDrops)) c.rawDrops = mergeRaw(c.rawDrops, x.timeBasedDrops);
       c.detail = true;
     });
+  }
+  // 5b) nadal brakuje obrazków nagród: kampanię widać też (bez logowania) pod kanałami, którym ją przypisano – także gdy nie nadają
+  const still = relevant.filter((c) => lacking(c) && (c.chanIds || []).length && c.fillTries < 6).slice(0, 8);
+  if (still.length) {
+    for (const c of still) c.fillTries++;
+    try {
+      const res = await gqlBatch(still.map((c) => qChanCamps(c.chanIds.slice(0, 3))));
+      res.forEach((d) => {
+        for (const ch of Object.values(d || {})) for (const v of (ch && ch.viewerDropCampaigns) || []) {
+          if (v && v.id && camps[v.id] && Array.isArray(v.timeBasedDrops)) camps[v.id].rawDrops = mergeRaw(camps[v.id].rawDrops, v.timeBasedDrops);
+        }
+      });
+    } catch (e) {}
   }
 
   // 6) gdy zbiorczy odczyt postępu zawiódł – próbujemy kampania po kampanii

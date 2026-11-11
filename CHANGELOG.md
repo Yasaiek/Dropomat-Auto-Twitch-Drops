@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+- Drop icons and names no longer go missing for campaigns you have no progress in yet (data from several Twitch sources is now combined).
+- A drop without a name no longer shows a stray colon in the queue.
+
 ## 1.2.0
 - Campaign list read from Twitch's own drops page plus a public scan, so campaigns no longer go missing.
 - Streams are verified to really carry the game's campaign before watching.
