@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.4
+- Tracked tab: a game whose running campaign you have already completed now says so instead of "campaign running · not in queue".
+
 ## 1.2.3
 - A finished drop that you already claimed is no longer shown as "to claim" after its campaign leaves your Twitch inventory.
 

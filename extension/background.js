@@ -1271,8 +1271,13 @@ function view(st) {
     settings: st.settings, run: st.run, log: st.log.slice(-40), diag: st.diag || null, progKnown: !!st.progKnown,
     update: st.update || null, version: chrome.runtime.getManifest().version,
     campaigns: campaignGroups(st, now), claimBlocked: st.settings.autoClaim ? (st.claimBlocked || []) : [],
-    tracked: st.tracked.map((t) => ({ gameId: t.gameId, slug: t.slug, name: t.name, icon: t.icon || '', active: gameCamps(st, t, now).length,
-      queued: st.games.some((g) => sameGame(g, t)) })),
+    tracked: st.tracked.map((t) => {
+      const camps = gameCamps(st, t, now);
+      const timed = camps.filter((c) => c.drops && c.drops.length); // kampanie z dropami „za oglądanie”
+      return { gameId: t.gameId, slug: t.slug, name: t.name, icon: t.icon || '', active: camps.length,
+        done: timed.length > 0 && timed.every((c) => c.drops.every((d) => d.claimed)), // wszystko z trwających kampanii już odebrane
+        queued: st.games.some((g) => sameGame(g, t)) };
+    }),
     games: st.games.map((g) => {
       const a = assess(st, g, now);
       let status = a.status;

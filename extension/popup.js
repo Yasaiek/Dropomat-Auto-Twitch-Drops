@@ -258,7 +258,7 @@ function renderTracked(s) {
     const item = el('div', 'item');
     const main = el('div', 'item-main plain');
     const text = el('div', 'item-text');
-    text.append(el('div', 'item-name', x.name), el('div', 'item-sub sub', t(x.active ? (x.queued ? 'tActiveQ' : 'tActive') : 'tWait')));
+    text.append(el('div', 'item-name', x.name), el('div', 'item-sub sub', t(x.active ? (x.done ? 'tDone' : x.queued ? 'tActiveQ' : 'tActive') : 'tWait')));
     const del = el('button', 'icon', '✕'); del.title = t('untrack');
     del.onclick = () => toggleTrack(x);
     main.append(el('span', 'pos star-pos', '★'), art(x.icon), text, del);
