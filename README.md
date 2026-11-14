@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Download (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../issues/new/choose">Report a bug</a> &nbsp;·&nbsp; Version 1.2.5
+  <a href="../../issues/new/choose">Report a bug</a> &nbsp;·&nbsp; Version 1.2.6
 </p>
 <p align="center"><img src="docs/img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Automated watching is against Twitch's terms of service, so you use it at your o
 Press ⟳ in the Campaigns tab. If it is still missing, add the game by name in the Watching tab or track it.
 
 **Does it send any data?**  
-Once a day the extension adds +1 to an anonymous public counter, so this page can show how many installs are active. Nothing about you, your account or what you watch is sent, and you can turn it off in Settings.
+While it is running, the extension adds +1 every 10 minutes to an anonymous public counter, so this page can show how many people are farming right now. Nothing about you, your account or what you watch is sent, and you can turn it off in Settings.
 
 ## Found a bug?
 

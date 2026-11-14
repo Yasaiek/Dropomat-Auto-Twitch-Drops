@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Télécharger (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Signaler un bug</a> &nbsp;·&nbsp; Version 1.2.5
+  <a href="../../../../issues/new/choose">Signaler un bug</a> &nbsp;·&nbsp; Version 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Le visionnage automatisé est contraire aux conditions d’utilisation de Twitch
 Appuyez sur ⟳ dans l’onglet Campagnes. Si elle manque toujours, ajoutez le jeu par son nom dans l’onglet En cours ou suivez-le.
 
 **Envoie-t-elle des données ?**  
-Une fois par jour, l’extension ajoute +1 à un compteur public anonyme pour que cette page puisse afficher le nombre d’installations actives. Rien sur vous, votre compte ou ce que vous regardez n’est envoyé, et vous pouvez le désactiver dans les paramètres.
+Quand elle tourne, l’extension ajoute +1 toutes les 10 minutes à un compteur public anonyme pour que cette page affiche combien de personnes farment en ce moment. Rien sur vous, votre compte ou ce que vous regardez n’est envoyé, et vous pouvez le désactiver dans les paramètres.
 
 ## Un bug ?
 

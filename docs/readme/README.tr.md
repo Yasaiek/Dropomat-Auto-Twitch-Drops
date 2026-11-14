@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ İndir (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Hata bildir</a> &nbsp;·&nbsp; Sürüm 1.2.5
+  <a href="../../../../issues/new/choose">Hata bildir</a> &nbsp;·&nbsp; Sürüm 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Otomatik izleme Twitch kullanım şartlarına aykırıdır; riski siz üstlenirs
 Kampanyalar sekmesinde ⟳ düğmesine basın. Hâlâ yoksa oyunu İzlenen sekmesinde adıyla ekleyin ya da takip edin.
 
 **Herhangi bir veri gönderiyor mu?**  
-Uzantı günde bir kez anonim, herkese açık bir sayaca +1 ekler; böylece bu sayfa kaç kurulumun etkin olduğunu gösterebilir. Siz, hesabınız veya izledikleriniz hakkında hiçbir şey gönderilmez ve Ayarlar’dan kapatabilirsiniz.
+Uzantı çalışırken 10 dakikada bir anonim, herkese açık bir sayaca +1 ekler; böylece bu sayfa şu an kaç kişinin drop kastığını gösterebilir. Siz, hesabınız veya izledikleriniz hakkında hiçbir şey gönderilmez ve Ayarlar’dan kapatabilirsiniz.
 
 ## Hata mı buldunuz?
 

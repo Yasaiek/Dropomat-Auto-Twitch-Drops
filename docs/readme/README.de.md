@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Herunterladen (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Fehler melden</a> &nbsp;·&nbsp; Version 1.2.5
+  <a href="../../../../issues/new/choose">Fehler melden</a> &nbsp;·&nbsp; Version 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Automatisches Zuschauen verstößt gegen die Twitch-Nutzungsbedingungen – Nutz
 Drücke ⟳ im Tab Kampagnen. Fehlt sie weiterhin, füge das Spiel im Tab „Läuft“ per Namen hinzu oder verfolge es.
 
 **Sendet es irgendwelche Daten?**  
-Einmal täglich zählt die Erweiterung +1 zu einem anonymen öffentlichen Zähler, damit diese Seite zeigen kann, wie viele Installationen aktiv sind. Über dich, dein Konto oder das, was du schaust, wird nichts gesendet; in den Einstellungen lässt es sich abschalten.
+Solange sie läuft, zählt die Erweiterung alle 10 Minuten +1 zu einem anonymen öffentlichen Zähler, damit diese Seite zeigen kann, wie viele Leute gerade farmen. Über dich, dein Konto oder das, was du schaust, wird nichts gesendet; in den Einstellungen lässt es sich abschalten.
 
 ## Fehler gefunden?
 

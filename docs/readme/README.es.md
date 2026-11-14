@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Descargar (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Informar de un error</a> &nbsp;·&nbsp; Versión 1.2.5
+  <a href="../../../../issues/new/choose">Informar de un error</a> &nbsp;·&nbsp; Versión 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Ver de forma automatizada va contra los términos de Twitch, así que lo usas ba
 Pulsa ⟳ en la pestaña Campañas. Si sigue sin aparecer, añade el juego por nombre en la pestaña Viendo o síguelo.
 
 **¿Envía algún dato?**  
-Una vez al día la extensión suma +1 a un contador público anónimo para que esta página muestre cuántas instalaciones están activas. No se envía nada sobre ti, tu cuenta ni lo que ves, y puedes desactivarlo en Ajustes.
+Mientras funciona, la extensión suma +1 cada 10 minutos a un contador público anónimo para que esta página muestre cuántas personas están farmeando ahora. No se envía nada sobre ti, tu cuenta ni lo que ves, y puedes desactivarlo en Ajustes.
 
 ## ¿Encontraste un error?
 

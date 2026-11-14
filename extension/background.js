@@ -17,7 +17,7 @@ const DEF_SETTINGS = {
   stallMin: 15,        // po ilu minutach bez postępu zmienić stream
   notify: true,        // powiadomienia systemowe
   autoUnmute: true,    // samoczynne odblokowanie dźwięku (krótki pasek „debugowanie”)
-  stats: true,         // anonimowy licznik aktywnych instalacji (+1 raz na dobę, bez żadnych danych)
+  stats: true,         // anonimowy licznik „farmi teraz” (+1 co 10 min podczas pracy, bez żadnych danych)
   autoClaim: false,    // samoczynne odbieranie wbitych dropów (klik „Odbierz” w ekwipunku Twitcha)
   fallbackHours: 6     // limit na grę, gdy nie da się odczytać postępu
 };
@@ -920,25 +920,27 @@ function newer(a, b) { // czy wersja a jest nowsza od b
   for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d > 0; }
   return false;
 }
-// Anonimowy licznik aktywnych instalacji: raz na dobę (UTC) +1 do publicznego licznika danego dnia.
-// Nie wysyłamy żadnych danych – to samo wywołanie adresu u każdego. Działa poza kolejką zapisu stanu, więc nie spowalnia pracy.
+// Anonimowy licznik „farmi teraz”: gdy rozszerzenie działa (kliknięty Start), raz na 10-minutowe okno dolicza +1
+// do publicznego licznika tego okna. Strona projektu czyta bieżące i poprzednie okno. Nie wysyłamy żadnych danych –
+// to samo wywołanie adresu u każdego. Działa poza kolejką zapisu stanu, więc nie spowalnia pracy.
+const STAT_WINDOW = 600000;
 let statBusy = false;
-async function pingStats(settings) {
+async function pingStats(settings, running) {
   const base = T.statsUrl !== undefined ? T.statsUrl : (typeof DROPOMAT_STATS_URL === 'string' ? DROPOMAT_STATS_URL : '');
-  if (!base || settings.stats === false || statBusy) return;
+  if (!running || !base || settings.stats === false || statBusy) return;
   statBusy = true;
   try {
-    const now = Date.now(), day = new Date(now).toISOString().slice(0, 10);
+    const now = Date.now(), w = Math.floor(now / STAT_WINDOW);
     const { stat } = await chrome.storage.local.get('stat');
-    if (stat && (stat.day === day || now - (stat.tryAt || 0) < 1800000)) return; // dziś już policzone albo próba była przed chwilą
-    await chrome.storage.local.set({ stat: { day: (stat && stat.day) || '', tryAt: now } });
+    if (stat && (stat.w === w || now - (stat.tryAt || 0) < 120000)) return; // to okno już policzone albo próba była przed chwilą
+    await chrome.storage.local.set({ stat: { w: (stat && stat.w) || 0, tryAt: now } });
     const ctl = new AbortController();
     const tm = setTimeout(() => ctl.abort(), 10000);
     try {
-      const r = await fetch(base + 'active-' + day, { cache: 'no-store', signal: ctl.signal });
-      if (r.ok) await chrome.storage.local.set({ stat: { day, tryAt: now } });
+      const r = await fetch(base + 'run-' + w, { cache: 'no-store', signal: ctl.signal });
+      if (r.ok) await chrome.storage.local.set({ stat: { w, tryAt: now } });
     } finally { clearTimeout(tm); }
-  } catch (e) { /* brak sieci – spróbujemy za pół godziny */ } finally { statBusy = false; }
+  } catch (e) { /* brak sieci – spróbujemy za chwilę */ } finally { statBusy = false; }
 }
 
 async function checkUpdate(st, now, force) {
@@ -996,7 +998,7 @@ async function tick(st) {
   const r = st.run;
   st.aliveAt = now;
   await checkUpdate(st, now, false);
-  pingStats(st.settings); // bez czekania
+  pingStats(st.settings, !!r.running); // bez czekania
 
   if (!r.running) {
     if (!st.settings.autoTrack || !st.tracked.length) return;

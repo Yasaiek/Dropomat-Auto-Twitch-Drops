@@ -159,6 +159,9 @@ write(os.path.join(ROOT, '.gitattributes'), '* -text\n')
 write(os.path.join(ROOT, 'CHANGELOG.md'), f'''# Changelog
 
 ## {version}
+- The site counter now shows how many people are farming right now (Start pressed) instead of installs per day: while running, the extension adds +1 to an anonymous public counter every 10 minutes.
+
+## 1.2.5
 - Project site shows active installs, downloads and visits. For the first of these the extension adds +1 to an anonymous public counter once a day (no data is sent; can be turned off in Settings).
 - Download links now point to the latest GitHub release.
 

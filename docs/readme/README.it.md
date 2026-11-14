@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Scarica (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Segnala un bug</a> &nbsp;·&nbsp; Versione 1.2.5
+  <a href="../../../../issues/new/choose">Segnala un bug</a> &nbsp;·&nbsp; Versione 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ La visione automatizzata è contraria ai termini di Twitch, quindi lo usi a tuo 
 Premi ⟳ nella scheda Campagne. Se manca ancora, aggiungi il gioco per nome nella scheda In visione oppure seguilo.
 
 **Invia dei dati?**  
-Una volta al giorno l’estensione aggiunge +1 a un contatore pubblico anonimo, così questa pagina può mostrare quante installazioni sono attive. Non viene inviato nulla su di te, sul tuo account o su ciò che guardi, e puoi disattivarlo nelle Impostazioni.
+Mentre è in funzione, l’estensione aggiunge +1 ogni 10 minuti a un contatore pubblico anonimo, così questa pagina può mostrare quante persone stanno farmando ora. Non viene inviato nulla su di te, sul tuo account o su ciò che guardi, e puoi disattivarlo nelle Impostazioni.
 
 ## Hai trovato un bug?
 

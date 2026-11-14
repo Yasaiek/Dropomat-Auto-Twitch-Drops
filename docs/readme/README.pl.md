@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Pobierz (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Zgłoś błąd</a> &nbsp;·&nbsp; Wersja 1.2.5
+  <a href="../../../../issues/new/choose">Zgłoś błąd</a> &nbsp;·&nbsp; Wersja 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@ Automatyczne oglądanie jest wbrew regulaminowi Twitcha, więc używasz na włas
 Kliknij ⟳ w zakładce Kampanie. Jeśli dalej jej nie ma, dodaj grę po nazwie w zakładce Oglądane albo zacznij ją śledzić.
 
 **Czy wysyła jakieś dane?**  
-Raz na dobę rozszerzenie dolicza +1 do anonimowego publicznego licznika, żeby ta strona mogła pokazać, ile instalacji jest aktywnych. Nie wysyła nic o Tobie, koncie ani o tym, co oglądasz, i można to wyłączyć w Ustawieniach.
+Gdy działa, rozszerzenie co 10 minut dolicza +1 do anonimowego publicznego licznika, żeby ta strona mogła pokazać, ile osób farmi w tej chwili. Nie wysyła nic o Tobie, koncie ani o tym, co oglądasz, i można to wyłączyć w Ustawieniach.
 
 ## Znalazłeś błąd?
 

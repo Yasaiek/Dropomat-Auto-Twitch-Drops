@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ 下载 (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">报告问题</a> &nbsp;·&nbsp; 版本 1.2.5
+  <a href="../../../../issues/new/choose">报告问题</a> &nbsp;·&nbsp; 版本 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@
 在“活动”标签页点击 ⟳。如果还是没有，可在“观看”标签页按名称添加游戏，或者关注它。
 
 **它会发送任何数据吗？**  
-扩展每天一次为匿名的公开计数器 +1，这样本页面才能显示有多少安装处于活跃状态。不会发送任何关于你、你的账号或观看内容的信息，并且可以在设置中关闭。
+扩展运行时，每 10 分钟为匿名的公开计数器 +1，这样本页面才能显示此刻有多少人在挂掉宝。不会发送任何关于你、你的账号或观看内容的信息，并且可以在设置中关闭。
 
 ## 发现问题？
 

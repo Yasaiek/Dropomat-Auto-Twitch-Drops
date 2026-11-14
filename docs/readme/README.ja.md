@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ ダウンロード (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">不具合を報告</a> &nbsp;·&nbsp; バージョン 1.2.5
+  <a href="../../../../issues/new/choose">不具合を報告</a> &nbsp;·&nbsp; バージョン 1.2.6
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -62,7 +62,7 @@
 「キャンペーン」タブの ⟳ を押してください。それでも出ない場合は、「視聴」タブでゲーム名から追加するか、追跡してください。
 
 **何かデータを送信しますか？**  
-拡張機能は1日1回、匿名の公開カウンターに +1 します。これにより、このページで有効なインストール数を表示できます。あなたやアカウント、視聴内容に関する情報は送信されず、設定でオフにできます。
+拡張機能の稼働中、10分ごとに匿名の公開カウンターに +1 します。これにより、このページで現在何人が稼働中かを表示できます。あなたやアカウント、視聴内容に関する情報は送信されず、設定でオフにできます。
 
 ## 不具合を見つけたら
 
