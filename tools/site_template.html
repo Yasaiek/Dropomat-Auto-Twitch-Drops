@@ -65,6 +65,12 @@ nav .wrap { display: flex; align-items: center; gap: 14px; height: 60px; }
 .btn.primary { background: linear-gradient(100deg, var(--accent), #8fb4ff); color: var(--on); border-color: transparent; box-shadow: 0 10px 30px rgba(96,205,255,.25); }
 .btn.primary:hover { box-shadow: 0 14px 38px rgba(96,205,255,.38); }
 .meta { margin-top: 18px; font-size: 14px; color: var(--sub); }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.stat { min-width: 132px; padding: 11px 15px; border: 1px solid var(--line2); border-radius: 12px; background: rgba(255,255,255,.035); animation: statIn .5s ease both; }
+.stat[hidden] { display: none; }
+.stat b { display: block; font-size: 24px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12.5px; color: var(--sub); }
+@keyframes statIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 /* animowana makieta okienka */
 .demo { justify-self: center; width: min(390px, 100%); background: #0a0a0b; border: 1px solid var(--line2); border-radius: 16px; padding: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03); position: relative; animation: float 7s ease-in-out infinite; }
@@ -194,6 +200,11 @@ footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--s
       <a class="btn" id="gh" href="#" target="_blank" rel="noopener"><span data-t="github"></span></a>
     </div>
     <div class="meta"><span data-t="version"></span> __VERSION__ · <span data-t="worksIn"></span></div>
+    <div class="stats" id="stats" hidden>
+      <div class="stat" hidden><b id="stA">0</b><span data-t="stActive"></span></div>
+      <div class="stat" hidden><b id="stD">0</b><span data-t="stDownloads"></span></div>
+      <div class="stat" hidden><b id="stV">0</b><span data-t="stVisits"></span></div>
+    </div>
   </div>
 
   <div class="demo" id="demo" aria-hidden="true">
@@ -262,6 +273,56 @@ if (location.hostname.endsWith('.github.io')) {
 document.getElementById('gh').href = repo || 'https://github.com';
 document.getElementById('issue').href = repo ? repo + '/issues/new/choose' : 'https://github.com';
 
+// Liczniki pod przyciskami: pobrania (GitHub Releases), wejścia na stronę i aktywne instalacje (publiczny licznik).
+// Każdy pokazuje się tylko wtedy, gdy uda się go odczytać; liczymy wyłącznie na prawdziwej stronie projektu.
+const COUNTER = 'https://abacus.jasoncameron.dev', NS = 'dropomat-yasaiek';
+const setStat = (id, v) => {
+  if (!(v >= 0)) return;
+  const b = document.getElementById(id);
+  b.textContent = Number(v).toLocaleString('en-US').replace(/,/g, ' ');
+  b.parentNode.hidden = false; document.getElementById('stats').hidden = false;
+};
+const counter = async (path) => {
+  const r = await fetch(COUNTER + path, { cache: 'no-store' });
+  if (r.status === 404) return 0; // licznik jeszcze nie istnieje
+  if (!r.ok) throw new Error('counter');
+  return Number((await r.json()).value) || 0;
+};
+if (repo) {
+  (async () => { // wejścia: +1 raz na sesję przeglądarki
+    try {
+      let seen = false; try { seen = sessionStorage.getItem('dv') === '1'; } catch (e) {}
+      const v = await counter((seen ? '/get/' : '/hit/') + NS + '/visits');
+      try { sessionStorage.setItem('dv', '1'); } catch (e) {}
+      setStat('stV', v);
+    } catch (e) {}
+  })();
+  (async () => { // aktywne instalacje: każda dolicza się raz na dobę (UTC); bierzemy większą z liczb „dziś” i „wczoraj”
+    try {
+      const day = (off) => new Date(Date.now() - off * 86400000).toISOString().slice(0, 10);
+      const [a, b] = await Promise.all([counter('/get/' + NS + '/active-' + day(0)), counter('/get/' + NS + '/active-' + day(1))]);
+      setStat('stA', Math.max(a, b));
+    } catch (e) {}
+  })();
+  (async () => { // pobrania: suma pobrań paczek ze wszystkich wydań; przycisk kieruje do najnowszego wydania, żeby się liczyły
+    try {
+      let list = null;
+      try { const c = JSON.parse(sessionStorage.getItem('rel') || 'null'); if (c && Date.now() - c.t < 600000) list = c.l; } catch (e) {}
+      if (!list) {
+        const r = await fetch(repo.replace('https://github.com/', 'https://api.github.com/repos/') + '/releases?per_page=100');
+        if (!r.ok) throw new Error('releases');
+        list = (await r.json()).map((x) => (x.assets || []).map((a) => [a.name, a.download_count]));
+        try { sessionStorage.setItem('rel', JSON.stringify({ t: Date.now(), l: list })); } catch (e) {}
+      }
+      setStat('stD', list.flat().reduce((n, a) => n + (a[1] || 0), 0));
+      if (list[0] && list[0].some((a) => a[0] === 'dropomat.zip')) {
+        const dl = document.getElementById('dl');
+        dl.href = repo + '/releases/latest/download/dropomat.zip'; dl.removeAttribute('download');
+      }
+    } catch (e) {}
+  })();
+}
+
 let lang = 'en';
 try {
   const q = new URLSearchParams(location.search).get('lang');
@@ -295,7 +356,7 @@ function apply() {
   document.title = 'Dropomat – ' + s.tagline;
   document.getElementById('feat').innerHTML = [1, 2, 3, 4, 5, 6].map((i) =>
     '<div class="card reveal in"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + FEAT_ICONS[i - 1] + '</svg></div><h3>' + esc(s['f' + i + 't']) + '</h3><p>' + esc(s['f' + i]) + '</p></div>').join('');
-  document.getElementById('faqList').innerHTML = [1, 2, 3, 4].map((i) => '<details' + (i === 1 ? ' open' : '') + '><summary>' + esc(s['q' + i]) + '</summary><p>' + esc(s['a' + i]) + '</p></details>').join('');
+  document.getElementById('faqList').innerHTML = [1, 2, 3, 4, 5].map((i) => '<details' + (i === 1 ? ' open' : '') + '><summary>' + esc(s['q' + i]) + '</summary><p>' + esc(s['a' + i]) + '</p></details>').join('');
   const shots = ['campaigns', 'watching', 'tracked', 'settings'];
   const dir = SHOT_LANGS.includes(lang) ? lang : 'en';
   const tabs = document.getElementById('useTabs');

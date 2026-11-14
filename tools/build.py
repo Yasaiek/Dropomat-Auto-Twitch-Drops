@@ -9,6 +9,7 @@ EXT_SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, 'extension')
 DOCS = os.path.join(ROOT, 'docs')
 SHOT_LANGS = ['en', 'pl']
 SITE = 'https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/'
+REPO = 'https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops'
 
 def write(path, text):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -67,7 +68,7 @@ def readme(code, root):
 <p align="center"><b>{s["tagline"]}</b></p>
 <p align="center">{flags}</p>
 <p align="center">
-  <a href="{d}dropomat.zip?raw=true"><b>⬇ {s["download"]} (ZIP)</b></a> &nbsp;·&nbsp;
+  <a href="{REPO}/releases/latest/download/dropomat.zip"><b>⬇ {s["download"]} (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="{SITE}"><b>🌐 Website</b></a> &nbsp;·&nbsp;
   <a href="{issues}">{s["report"]}</a> &nbsp;·&nbsp; {s["version"]} {version}
 </p>
@@ -111,7 +112,7 @@ def readme(code, root):
 ## {s["faqTitle"]}
 
 '''
-    for i in range(1, 5):
+    for i in range(1, 6):
         out += f'**{s[f"q{i}"]}**  \n{s[f"a{i}"]}\n\n'
     out += f'''## {s["bugTitle"]}
 
@@ -158,6 +159,10 @@ write(os.path.join(ROOT, '.gitattributes'), '* -text\n')
 write(os.path.join(ROOT, 'CHANGELOG.md'), f'''# Changelog
 
 ## {version}
+- Project site shows active installs, downloads and visits. For the first of these the extension adds +1 to an anonymous public counter once a day (no data is sent; can be turned off in Settings).
+- Download links now point to the latest GitHub release.
+
+## 1.2.4
 - Tracked tab: a game whose running campaign you have already completed now says so instead of "campaign running · not in queue".
 
 ## 1.2.3

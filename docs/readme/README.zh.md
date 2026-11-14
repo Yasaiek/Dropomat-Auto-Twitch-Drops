@@ -3,9 +3,9 @@
 <p align="center"><b>替你观看有掉宝的 Twitch 直播。把游戏排好队，继续玩你的。</b></p>
 <p align="center"><a href="../../README.md" title="English"><img src="../flags/en.svg" width="24" alt="English"></a> <a href="README.pl.md" title="Polski"><img src="../flags/pl.svg" width="24" alt="Polski"></a> <a href="README.de.md" title="Deutsch"><img src="../flags/de.svg" width="24" alt="Deutsch"></a> <a href="README.fr.md" title="Français"><img src="../flags/fr.svg" width="24" alt="Français"></a> <a href="README.es.md" title="Español"><img src="../flags/es.svg" width="24" alt="Español"></a> <a href="README.pt.md" title="Português (BR)"><img src="../flags/pt.svg" width="24" alt="Português (BR)"></a> <a href="README.it.md" title="Italiano"><img src="../flags/it.svg" width="24" alt="Italiano"></a> <a href="README.ru.md" title="Русский"><img src="../flags/ru.svg" width="24" alt="Русский"></a> <a href="README.uk.md" title="Українська"><img src="../flags/uk.svg" width="24" alt="Українська"></a> <a href="README.tr.md" title="Türkçe"><img src="../flags/tr.svg" width="24" alt="Türkçe"></a> <a href="README.zh.md" title="简体中文"><img src="../flags/zh.svg" width="24" alt="简体中文"></a> <a href="README.ja.md" title="日本語"><img src="../flags/ja.svg" width="24" alt="日本語"></a></p>
 <p align="center">
-  <a href="../dropomat.zip?raw=true"><b>⬇ 下载 (ZIP)</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ 下载 (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">报告问题</a> &nbsp;·&nbsp; 版本 1.2.4
+  <a href="../../../../issues/new/choose">报告问题</a> &nbsp;·&nbsp; 版本 1.2.5
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -60,6 +60,9 @@
 
 **为什么列表里缺少某个活动？**  
 在“活动”标签页点击 ⟳。如果还是没有，可在“观看”标签页按名称添加游戏，或者关注它。
+
+**它会发送任何数据吗？**  
+扩展每天一次为匿名的公开计数器 +1，这样本页面才能显示有多少安装处于活跃状态。不会发送任何关于你、你的账号或观看内容的信息，并且可以在设置中关闭。
 
 ## 发现问题？
 

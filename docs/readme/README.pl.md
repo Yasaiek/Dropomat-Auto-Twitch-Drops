@@ -3,9 +3,9 @@
 <p align="center"><b>Ogląda za Ciebie streamy z dropami na Twitchu. Ustaw kolejkę gier i graj dalej.</b></p>
 <p align="center"><a href="../../README.md" title="English"><img src="../flags/en.svg" width="24" alt="English"></a> <a href="README.pl.md" title="Polski"><img src="../flags/pl.svg" width="24" alt="Polski"></a> <a href="README.de.md" title="Deutsch"><img src="../flags/de.svg" width="24" alt="Deutsch"></a> <a href="README.fr.md" title="Français"><img src="../flags/fr.svg" width="24" alt="Français"></a> <a href="README.es.md" title="Español"><img src="../flags/es.svg" width="24" alt="Español"></a> <a href="README.pt.md" title="Português (BR)"><img src="../flags/pt.svg" width="24" alt="Português (BR)"></a> <a href="README.it.md" title="Italiano"><img src="../flags/it.svg" width="24" alt="Italiano"></a> <a href="README.ru.md" title="Русский"><img src="../flags/ru.svg" width="24" alt="Русский"></a> <a href="README.uk.md" title="Українська"><img src="../flags/uk.svg" width="24" alt="Українська"></a> <a href="README.tr.md" title="Türkçe"><img src="../flags/tr.svg" width="24" alt="Türkçe"></a> <a href="README.zh.md" title="简体中文"><img src="../flags/zh.svg" width="24" alt="简体中文"></a> <a href="README.ja.md" title="日本語"><img src="../flags/ja.svg" width="24" alt="日本語"></a></p>
 <p align="center">
-  <a href="../dropomat.zip?raw=true"><b>⬇ Pobierz (ZIP)</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Pobierz (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../../../issues/new/choose">Zgłoś błąd</a> &nbsp;·&nbsp; Wersja 1.2.4
+  <a href="../../../../issues/new/choose">Zgłoś błąd</a> &nbsp;·&nbsp; Wersja 1.2.5
 </p>
 <p align="center"><img src="../img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -60,6 +60,9 @@ Automatyczne oglądanie jest wbrew regulaminowi Twitcha, więc używasz na włas
 
 **Dlaczego na liście brakuje kampanii?**  
 Kliknij ⟳ w zakładce Kampanie. Jeśli dalej jej nie ma, dodaj grę po nazwie w zakładce Oglądane albo zacznij ją śledzić.
+
+**Czy wysyła jakieś dane?**  
+Raz na dobę rozszerzenie dolicza +1 do anonimowego publicznego licznika, żeby ta strona mogła pokazać, ile instalacji jest aktywnych. Nie wysyła nic o Tobie, koncie ani o tym, co oglądasz, i można to wyłączyć w Ustawieniach.
 
 ## Znalazłeś błąd?
 

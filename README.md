@@ -3,9 +3,9 @@
 <p align="center"><b>Watches Twitch drop streams for you. Queue the games and keep playing.</b></p>
 <p align="center"><a href="README.md" title="English"><img src="docs/flags/en.svg" width="24" alt="English"></a> <a href="docs/readme/README.pl.md" title="Polski"><img src="docs/flags/pl.svg" width="24" alt="Polski"></a> <a href="docs/readme/README.de.md" title="Deutsch"><img src="docs/flags/de.svg" width="24" alt="Deutsch"></a> <a href="docs/readme/README.fr.md" title="Français"><img src="docs/flags/fr.svg" width="24" alt="Français"></a> <a href="docs/readme/README.es.md" title="Español"><img src="docs/flags/es.svg" width="24" alt="Español"></a> <a href="docs/readme/README.pt.md" title="Português (BR)"><img src="docs/flags/pt.svg" width="24" alt="Português (BR)"></a> <a href="docs/readme/README.it.md" title="Italiano"><img src="docs/flags/it.svg" width="24" alt="Italiano"></a> <a href="docs/readme/README.ru.md" title="Русский"><img src="docs/flags/ru.svg" width="24" alt="Русский"></a> <a href="docs/readme/README.uk.md" title="Українська"><img src="docs/flags/uk.svg" width="24" alt="Українська"></a> <a href="docs/readme/README.tr.md" title="Türkçe"><img src="docs/flags/tr.svg" width="24" alt="Türkçe"></a> <a href="docs/readme/README.zh.md" title="简体中文"><img src="docs/flags/zh.svg" width="24" alt="简体中文"></a> <a href="docs/readme/README.ja.md" title="日本語"><img src="docs/flags/ja.svg" width="24" alt="日本語"></a></p>
 <p align="center">
-  <a href="docs/dropomat.zip?raw=true"><b>⬇ Download (ZIP)</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/Yasaiek/Dropomat-Auto-Twitch-Drops/releases/latest/download/dropomat.zip"><b>⬇ Download (ZIP)</b></a> &nbsp;·&nbsp;
   <a href="https://yasaiek.github.io/Dropomat-Auto-Twitch-Drops/"><b>🌐 Website</b></a> &nbsp;·&nbsp;
-  <a href="../../issues/new/choose">Report a bug</a> &nbsp;·&nbsp; Version 1.2.4
+  <a href="../../issues/new/choose">Report a bug</a> &nbsp;·&nbsp; Version 1.2.5
 </p>
 <p align="center"><img src="docs/img/hero.png" alt="Dropomat" width="860"></p>
 
@@ -60,6 +60,9 @@ Automated watching is against Twitch's terms of service, so you use it at your o
 
 **Why is a campaign missing from the list?**  
 Press ⟳ in the Campaigns tab. If it is still missing, add the game by name in the Watching tab or track it.
+
+**Does it send any data?**  
+Once a day the extension adds +1 to an anonymous public counter, so this page can show how many installs are active. Nothing about you, your account or what you watch is sent, and you can turn it off in Settings.
 
 ## Found a bug?
 

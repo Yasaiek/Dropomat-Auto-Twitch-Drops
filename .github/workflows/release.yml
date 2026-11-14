@@ -24,7 +24,6 @@ jobs:
           {
             awk -v v="## $VERSION" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md
             echo
-            echo "**Install:** download \`dropomat-$VERSION.zip\` below, unpack it, open \`chrome://extensions\`, turn on Developer mode, click \"Load unpacked\" and pick the unpacked folder."
+            echo "**Install:** download \`dropomat.zip\` below, unpack it, open \`chrome://extensions\`, turn on Developer mode, click \"Load unpacked\" and pick the unpacked folder."
           } > notes.md
-          cp docs/dropomat.zip "dropomat-$VERSION.zip"
-          gh release create "$TAG" "dropomat-$VERSION.zip" --title "Dropomat $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
+          gh release create "$TAG" docs/dropomat.zip --title "Dropomat $VERSION" --notes-file notes.md --target "$GITHUB_SHA"
